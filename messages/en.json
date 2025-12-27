@@ -5,9 +5,26 @@
     "error": "Error",
     "success": "Success"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "liveData": "Live data from farms and inspections",
+    "errorLoading": "Failed to load dashboard data",
+    "batchesSubmitted": "Batches Submitted",
+    "pendingInspections": "Pending Inspections",
+    "passportsIssued": "Passports Issued",
+    "avgApproval": "Average Approval Time",
+    "active": "Active Batches",
+    "awaitingQA": "Awaiting QA",
+    "verifiableCredentials": "Verifiable Credentials Issued",
+    "target24h": "Target: within 24 hours",
+    "noData": "No data available",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity to show"
+  },
   "batchSubmission": {
     "title": "Batch Submission",
-    "description": "View all batches and their status.",
+    "description": "View all batches and their status",
+    "errorLoading": "Failed to load batch data",
     "buttons": {
       "newBatch": "New Batch"
     },
@@ -18,7 +35,8 @@
       "pending": "Pending",
       "pendingDesc": "Batches awaiting review",
       "avgProcessingTime": "Avg. Processing Time",
-      "targetTime": "Target Time"
+      "targetTime": "Target Time",
+      "active": "Active"
     },
     "tableTitle": "Batch List",
     "table": {
@@ -28,39 +46,31 @@
       "status": "Status",
       "date": "Date"
     },
-    "status": {
-      "approved": "Approved",
-      "pending": "Pending"
-    },
     "noData": "No data available"
   },
-  "dashboard": {
-    "title": "Dashboard",
-    "liveData": "Live data from farms and inspections",
-    "errorLoading": "Failed to load dashboard data. Please try again later.",
-    "batchesSubmitted": "Batches Submitted",
-    "pendingInspections": "Pending Inspections",
-    "passportsIssued": "Passports Issued",
-    "avgApproval": "Average Approval Time",
-    "active": "Active Batches",
-    "awaitingQA": "Awaiting QA",
-    "verifiableCredentials": "Verifiable Credentials Issued",
-    "target24h": "Target: within 24 hours",
-    "exportVolume": "Export Volume by Crop",
-    "noData": "No data available",
-    "recentActivity": "Recent Activity",
-    "noRecentActivity": "No recent activity to show.",
-    "activity": {
-      "activity1": "Batch ABC123 approved",
-      "activity2": "Batch XYZ456 pending inspection",
-      "activity3": "Passport issued for crop DEF"
+  "digitalPassports": {
+    "title": "Digital Passports",
+    "description": "View and manage verifiable credentials",
+    "errorLoading": "Failed to load passports",
+    "noPassports": "No digital passports available",
+    "labels": {
+      "loading": "Loading...",
+      "quantity": "Quantity",
+      "harvestDate": "Harvest Date",
+      "destination": "Destination",
+      "labReports": "Lab Reports",
+      "farmPhotos": "Farm Photos",
+      "none": "None"
+    },
+    "buttons": {
+      "back": "Back"
+    },
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "certified": "Certified"
     }
-  },
-  "crops": {
-    "wheat": "Wheat",
-    "rice": "Rice",
-    "maize": "Maize",
-    "soybean": "Soybean",
-    "barley": "Barley"
   }
 }

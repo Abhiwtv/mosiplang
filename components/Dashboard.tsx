@@ -16,7 +16,7 @@ interface DashboardData {
 }
 
 export function Dashboard() {
-  const t = useTranslations();
+  const t = useTranslations('dashboard');
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +44,11 @@ export function Dashboard() {
     );
   }
 
-  if (!data) return <div className="p-6 text-red-500">{t('dashboard.errorLoading')}</div>;
+  if (!data) {
+    return (
+      <div className="p-6 text-red-500">{t('errorLoading')}</div>
+    );
+  }
 
   const { stats, cropVolumes, recentActivity } = data;
   const maxVolume = Math.max(...cropVolumes.map(c => c.volume), 1);
@@ -52,8 +56,8 @@ export function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold text-slate-900">{t('dashboard.title')}</h1>
-        <div className="text-sm text-slate-500">{t('dashboard.liveData')}</div>
+        <h1 className="text-3xl font-semibold text-slate-900">{t('title')}</h1>
+        <div className="text-sm text-slate-500">{t('liveData')}</div>
       </div>
 
       {/* KPI Cards */}
@@ -62,7 +66,7 @@ export function Dashboard() {
         <div className="bg-white border border-slate-200 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">{t('dashboard.batchesSubmitted')}</p>
+              <p className="text-sm font-medium text-slate-600">{t('batchesSubmitted')}</p>
               <p className="text-3xl font-semibold text-slate-900 mt-2">{stats.batchesSubmitted}</p>
             </div>
             <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center">
@@ -71,7 +75,7 @@ export function Dashboard() {
           </div>
           <div className="mt-4 flex items-center gap-1 text-sm text-emerald-600">
             <TrendingUp className="w-4 h-4" />
-            <span>{t('dashboard.active')}</span>
+            <span>{t('active')}</span>
           </div>
         </div>
 
@@ -79,42 +83,42 @@ export function Dashboard() {
         <div className="bg-white border border-slate-200 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">{t('dashboard.pendingInspections')}</p>
+              <p className="text-sm font-medium text-slate-600">{t('pendingInspections')}</p>
               <p className="text-3xl font-semibold text-slate-900 mt-2">{stats.pendingInspections}</p>
             </div>
             <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
               <ClipboardCheck className="w-6 h-6 text-amber-600" />
             </div>
           </div>
-          <div className="mt-4 text-sm text-slate-500">{t('dashboard.awaitingQA')}</div>
+          <div className="mt-4 text-sm text-slate-500">{t('awaitingQA')}</div>
         </div>
 
         {/* Passports Issued */}
         <div className="bg-white border border-slate-200 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">{t('dashboard.passportsIssued')}</p>
+              <p className="text-sm font-medium text-slate-600">{t('passportsIssued')}</p>
               <p className="text-3xl font-semibold text-slate-900 mt-2">{stats.passportsIssued}</p>
             </div>
             <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center">
               <ShieldCheck className="w-6 h-6 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-4 text-sm text-slate-500">{t('dashboard.verifiableCredentials')}</div>
+          <div className="mt-4 text-sm text-slate-500">{t('verifiableCredentials')}</div>
         </div>
 
         {/* Avg Approval Time */}
         <div className="bg-white border border-slate-200 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">{t('dashboard.avgApproval')}</p>
+              <p className="text-sm font-medium text-slate-600">{t('avgApproval')}</p>
               <p className="text-3xl font-semibold text-slate-900 mt-2">{stats.avgApprovalTime}</p>
             </div>
             <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
               <Clock className="w-6 h-6 text-slate-600" />
             </div>
           </div>
-          <div className="mt-4 text-sm text-slate-500">{t('dashboard.target24h')}</div>
+          <div className="mt-4 text-sm text-slate-500">{t('target24h')}</div>
         </div>
       </div>
 
@@ -139,17 +143,17 @@ export function Dashboard() {
               </div>
             ))}
             {cropVolumes.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-8">{t('dashboard.noData')}</p>
+              <p className="text-slate-500 text-sm text-center py-8">{t('noData')}</p>
             )}
           </div>
         </div>
 
         {/* Recent Activity Feed */}
         <div className="bg-white border border-slate-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6">{t('dashboard.recentActivity')}</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-6">{t('recentActivity')}</h2>
           <div className="space-y-4">
             {recentActivity.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-8">{t('dashboard.noRecentActivity')}</p>
+              <p className="text-slate-500 text-sm text-center py-8">{t('noRecentActivity')}</p>
             )}
             {recentActivity.map((activity) => (
               <div key={activity.id} className="flex items-start gap-3 border-b border-slate-50 pb-3 last:border-0">

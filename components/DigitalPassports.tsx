@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, FileText, Image as ImageIcon } from 'lucide-react';
-import { useRole } from '../contexts/RoleContext';
 
 interface DigitalPassport {
     id: string;
@@ -19,35 +18,39 @@ interface DigitalPassport {
 
 export default function DigitalPassports() {
     const t = useTranslations('digitalPassports');
-    const { userEmail } = useRole();
 
     const [passports, setPassports] = useState<DigitalPassport[]>([]);
     const [dataLoading, setDataLoading] = useState(true);
     const [apiError, setApiError] = useState<string | null>(null);
     const [viewDetail, setViewDetail] = useState<DigitalPassport | null>(null);
 
+    useEffect(() => {
+        fetchPassports();
+    }, []);
+
     const fetchPassports = async () => {
         setDataLoading(true);
         setApiError(null);
         try {
-            const res = await fetch('/api/digital-passports');
-            if (!res.ok) throw new Error(t('errors.fetchFailed'));
+            const res = await fetch('/api/passports');
+            if (!res.ok) throw new Error(t('errorLoading'));
             const data = await res.json();
+            
             const mapped: DigitalPassport[] = data.map((d: any) => ({
                 id: d.id,
-                cropType: d.cropType,
-                quantity: d.quantity,
-                unit: d.unit,
-                harvestDate: new Date(d.harvestDate).toISOString().split('T')[0],
-                destinationCountry: d.destinationCountry,
-                status: d.status,
-                labReports: d.tests || [],
+                cropType: d.crop_type || d.cropType || 'Unknown',
+                quantity: d.quantity?.toString() || d.batch_details?.quantity?.toString() || '0',
+                unit: d.unit || d.batch_details?.unit || 'kg',
+                harvestDate: d.issued_at ? new Date(d.issued_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                destinationCountry: d.batch_details?.destination || 'Unknown',
+                status: d.batch_details?.status || 'APPROVED',
+                labReports: [],
                 farmPhotos: [],
             }));
             setPassports(mapped);
         } catch (err) {
             console.error(err);
-            setApiError(t('errors.couldNotLoad'));
+            setApiError(t('errorLoading'));
         } finally {
             setDataLoading(false);
         }
@@ -67,66 +70,124 @@ export default function DigitalPassports() {
         }
     };
 
+    if (dataLoading) {
+        return (
+            <div className="flex h-96 items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
+            </div>
+        );
+    }
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold">{t('title')}</h1>
-            {dataLoading && <p>{t('labels.loading')}</p>}
-            {apiError && <p className="text-red-500">{apiError}</p>}
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-semibold text-slate-900">{t('title')}</h1>
+            </div>
+
+            <p className="text-slate-500">{t('description')}</p>
+
+            {apiError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-600">{apiError}</p>
+                </div>
+            )}
 
             {!viewDetail && (
-                <ul className="mt-4">
-                    {passports.map(p => (
-                        <li key={p.id} className="border p-2 my-2 cursor-pointer" onClick={() => openDetail(p)}>
-                            <div className="flex justify-between">
-                                <span>{p.cropType} ({p.quantity} {p.unit})</span>
-                                <span className={`px-2 py-1 border rounded ${getStatusColor(p.status)}`}>
-                                    {t(`status.${p.status.toLowerCase()}`)}
-                                </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {passports.length === 0 ? (
+                        <div className="col-span-full text-center py-12">
+                            <p className="text-slate-500">{t('noPassports')}</p>
+                        </div>
+                    ) : (
+                        passports.map(p => (
+                            <div 
+                                key={p.id} 
+                                className="bg-white border border-slate-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" 
+                                onClick={() => openDetail(p)}
+                            >
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-slate-900">{p.cropType}</h3>
+                                        <p className="text-sm text-slate-600">{p.quantity} {p.unit}</p>
+                                    </div>
+                                    <span className={`px-3 py-1 border rounded-full text-xs font-medium ${getStatusColor(p.status)}`}>
+                                        {t(`status.${p.status.toLowerCase()}`)}
+                                    </span>
+                                </div>
+                                <div className="space-y-2 text-sm text-slate-600">
+                                    <p><span className="font-medium">{t('labels.harvestDate')}:</span> {p.harvestDate}</p>
+                                    <p><span className="font-medium">{t('labels.destination')}:</span> {p.destinationCountry}</p>
+                                </div>
                             </div>
-                            <div className="text-sm text-gray-500">{p.harvestDate}</div>
-                        </li>
-                    ))}
-                </ul>
+                        ))
+                    )}
+                </div>
             )}
 
             {viewDetail && (
-                <div className="border p-4 rounded space-y-4">
-                    <button onClick={closeDetail} className="flex items-center gap-1 text-blue-500">
-                        <ArrowLeft /> {t('buttons.back')}
+                <div className="bg-white border border-slate-200 rounded-lg p-6">
+                    <button 
+                        onClick={closeDetail} 
+                        className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 mb-6"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        {t('buttons.back')}
                     </button>
 
-                    <h2 className="text-xl font-bold">{viewDetail.cropType}</h2>
-                    <p>{t('labels.quantity')}: {viewDetail.quantity} {viewDetail.unit}</p>
-                    <p>{t('labels.harvestDate')}: {viewDetail.harvestDate}</p>
-                    <p>{t('labels.destination')}: {viewDetail.destinationCountry}</p>
-                    <p className={`inline-block px-2 py-1 border rounded ${getStatusColor(viewDetail.status)}`}>
-                        {t(`status.${viewDetail.status.toLowerCase()}`)}
-                    </p>
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900">{viewDetail.cropType}</h2>
+                            <p className="text-slate-600 mt-1">{viewDetail.quantity} {viewDetail.unit}</p>
+                        </div>
 
-                    <div>
-                        <h3 className="font-semibold">{t('labels.labReports')}</h3>
-                        {viewDetail.labReports.length > 0 ? (
-                            <ul>
-                                {viewDetail.labReports.map((r, i) => (
-                                    <li key={i} className="flex items-center gap-1">
-                                        <FileText size={16} /> {r}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : <p>{t('labels.none')}</p>}
-                    </div>
+                        <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-slate-200">
+                            <div>
+                                <p className="text-sm text-slate-500">{t('labels.harvestDate')}</p>
+                                <p className="font-semibold text-slate-900">{viewDetail.harvestDate}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-slate-500">{t('labels.destination')}</p>
+                                <p className="font-semibold text-slate-900">{viewDetail.destinationCountry}</p>
+                            </div>
+                        </div>
 
-                    <div>
-                        <h3 className="font-semibold">{t('labels.farmPhotos')}</h3>
-                        {viewDetail.farmPhotos.length > 0 ? (
-                            <ul>
-                                {viewDetail.farmPhotos.map((p, i) => (
-                                    <li key={i} className="flex items-center gap-1">
-                                        <ImageIcon size={16} /> {p}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : <p>{t('labels.none')}</p>}
+                        <div>
+                            <span className={`inline-block px-4 py-2 border rounded-lg ${getStatusColor(viewDetail.status)}`}>
+                                {t(`status.${viewDetail.status.toLowerCase()}`)}
+                            </span>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-3">{t('labels.labReports')}</h3>
+                            {viewDetail.labReports.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {viewDetail.labReports.map((r, i) => (
+                                        <li key={i} className="flex items-center gap-2 text-slate-700">
+                                            <FileText size={16} className="text-slate-400" />
+                                            {r}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-slate-500">{t('labels.none')}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-3">{t('labels.farmPhotos')}</h3>
+                            {viewDetail.farmPhotos.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {viewDetail.farmPhotos.map((p, i) => (
+                                        <li key={i} className="flex items-center gap-2 text-slate-700">
+                                            <ImageIcon size={16} className="text-slate-400" />
+                                            {p}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-slate-500">{t('labels.none')}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
