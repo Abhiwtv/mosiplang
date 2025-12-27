@@ -1,0 +1,66 @@
+{
+  "common": {
+    "appName": "AgriExport",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "batchSubmission": {
+    "title": "Batch Submission",
+    "description": "View all batches and their status.",
+    "buttons": {
+      "newBatch": "New Batch"
+    },
+    "stats": {
+      "totalBatches": "Total Batches",
+      "approved": "Approved",
+      "approvedDesc": "Number of approved batches",
+      "pending": "Pending",
+      "pendingDesc": "Batches awaiting review",
+      "avgProcessingTime": "Avg. Processing Time",
+      "targetTime": "Target Time"
+    },
+    "tableTitle": "Batch List",
+    "table": {
+      "batchId": "Batch ID",
+      "crop": "Crop",
+      "destination": "Destination",
+      "status": "Status",
+      "date": "Date"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending"
+    },
+    "noData": "No data available"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "liveData": "Live data from farms and inspections",
+    "errorLoading": "Failed to load dashboard data. Please try again later.",
+    "batchesSubmitted": "Batches Submitted",
+    "pendingInspections": "Pending Inspections",
+    "passportsIssued": "Passports Issued",
+    "avgApproval": "Average Approval Time",
+    "active": "Active Batches",
+    "awaitingQA": "Awaiting QA",
+    "verifiableCredentials": "Verifiable Credentials Issued",
+    "target24h": "Target: within 24 hours",
+    "exportVolume": "Export Volume by Crop",
+    "noData": "No data available",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity to show.",
+    "activity": {
+      "activity1": "Batch ABC123 approved",
+      "activity2": "Batch XYZ456 pending inspection",
+      "activity3": "Passport issued for crop DEF"
+    }
+  },
+  "crops": {
+    "wheat": "Wheat",
+    "rice": "Rice",
+    "maize": "Maize",
+    "soybean": "Soybean",
+    "barley": "Barley"
+  }
+}

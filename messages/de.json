@@ -1,0 +1,22 @@
+{
+  "common": {
+    "appName": "AgriExport",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "batchesSubmitted": "Eingereichte Chargen",
+    "pendingInspections": "Ausstehende Inspektionen",
+    "passportsIssued": "Ausgestellte Pässe",
+    "avgApprovalTime": "Durchschn. Genehmigung"
+  },
+  "batch": {
+    "newBatch": "Neue Charge",
+    "batchId": "Chargen-ID",
+    "cropType": "Erntetyp",
+    "quantity": "Menge",
+    "status": "Status"
+  }
+}

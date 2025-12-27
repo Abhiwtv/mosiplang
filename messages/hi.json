@@ -1,0 +1,38 @@
+{
+  "common": {
+    "appName": "एग्रीएक्सपोर्ट",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता"
+  },
+  "batchSubmission": {
+    "title": "बैच सबमिशन",
+    "description": "यहां सभी बैच और उनकी स्थिति देखें।",
+    "buttons": {
+      "newBatch": "नया बैच जोड़ें"
+    },
+    "stats": {
+      "totalBatches": "कुल बैच",
+      "approved": "स्वीकृत",
+      "approvedDesc": "स्वीकृत बैच की संख्या।",
+      "pending": "लंबित",
+      "pendingDesc": "लंबित बैच की संख्या।",
+      "avgProcessingTime": "औसत प्रोसेसिंग समय",
+      "targetTime": "लक्षित समय",
+      "active": "सक्रिय"
+    },
+    "tableTitle": "बैच विवरण",
+    "table": {
+      "batchId": "बैच आईडी",
+      "crop": "फसल",
+      "destination": "गंतव्य",
+      "status": "स्थिति",
+      "date": "तारीख"
+    },
+    "noData": "कोई डेटा उपलब्ध नहीं"
+  },
+  "dashboard": {
+    "recentActivity": "हाल की गतिविधि",
+    "noRecentActivity": "कोई हाल की गतिविधि नहीं"
+  }
+}

@@ -1,0 +1,168 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pyclient {
+  provider             = "prisma-client-py"
+  recursive_type_depth = "5"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  name            String
+  password        String?
+  role            UserRole @default(EXPORTER)
+  organization    String?
+  did             String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+
+  // Relations
+  assignedBatches Batch[]      @relation("AssignedInspector")
+  exportedBatches Batch[]      @relation("BatchExporter")
+  inspections     Inspection[]
+  qaProfile       QAProfile?
+  exporter        Exporter?
+}
+
+model QAProfile {
+  id             String  @id @default(uuid())
+  userId         String  @unique
+  address        String
+  maxCapacity    Int     @default(100)
+  currentLoad    Int     @default(0)
+  active         Boolean @default(true)
+  pinCode        Int
+  testsAvailable Json
+  user           User    @relation(fields: [userId], references: [id])
+}
+
+model Exporter {
+  iecNum   BigInt @id @unique
+  address  String
+  city     String
+  phoneNum BigInt
+  country  String
+  panNum   String
+  gstNum   String
+  userId   String @unique
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model ProcessingUnit {
+  id          String @id @default(uuid())
+  name        String
+  address     String
+  fssaiNumber BigInt
+}
+
+model Batch {
+  id                  String      @id @default(uuid())
+  batchNumber         String      @unique
+  cropType            String
+  variety             String?     @default("Grade A")
+  quantity            Float
+  unit                String
+  tests               String[]
+  location            String
+  pinCode             Int       @default(400091)
+  harvestDate         DateTime
+  destinationCountry  String
+  status              BatchStatus @default(PENDING)
+  traceabilityCode    String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  exporterId          String
+  exporter            User        @relation("BatchExporter", fields: [exporterId], references: [id])
+  
+  assignedInspectorId String?
+  assignedInspector   User?       @relation("AssignedInspector", fields: [assignedInspectorId], references: [id])
+  
+  inspection          Inspection?
+  certificate         Certificate?
+}
+
+model Inspection {
+  id               String   @id @default(uuid())
+  moisture         String
+  pesticideResidue String
+  organic          Boolean
+  heavyMetals      String?
+  grade            String?
+  isoCode          String?
+  notes            String?
+  inspectedAt      DateTime @default(now())
+
+  batchId          String   @unique
+  batch            Batch    @relation(fields: [batchId], references: [id])
+  
+  inspectorId      String
+  inspector        User     @relation(fields: [inspectorId], references: [id])
+}
+
+model Certificate {
+  id            String   @id @default(uuid())
+  batchNumber   String
+  productType   String
+  exporterName  String
+  qaAgencyName  String
+  issuedAt      DateTime
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  // Relations
+  batchId       String   @unique
+  batch         Batch    @relation(fields: [batchId], references: [id])
+  
+  vc            VerifiableCredential?
+}
+
+model VerifiableCredential {
+  id            String   @id @default(uuid())
+  vcJson        Json
+  issuerDid     String
+  subjectDid    String
+  signature     String
+  verifyUrl     String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  certificateId String      @unique
+  certificate   Certificate @relation(fields: [certificateId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String
+  actorId    String?
+  details    Json?
+  createdAt  DateTime @default(now())
+}
+
+// --- ENUMS ---
+  enum UserRole{
+  QA_AGENCY
+  EXPORTER
+  IMPORTER
+  ADMIN
+}
+
+enum BatchStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  CERTIFIED
+}
