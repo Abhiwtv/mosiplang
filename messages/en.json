@@ -49,28 +49,85 @@
     "noData": "No data available"
   },
   "digitalPassports": {
-    "title": "Digital Passports",
-    "description": "View and manage verifiable credentials",
-    "errorLoading": "Failed to load passports",
-    "noPassports": "No digital passports available",
-    "labels": {
-      "loading": "Loading...",
-      "quantity": "Quantity",
-      "harvestDate": "Harvest Date",
+    "title": "Digital Product Passports",
+    "subtitle": "Verifiable credentials for approved export batches",
+    "loading": "Loading digital passports...",
+    "errorTitle": "Error",
+    "noPassportsTitle": "No Passports Issued Yet",
+    "noPassportsDesc": "Digital passports are automatically generated when a batch is certified by a QA Agency.",
+    "active": "Active",
+    "passportSingular": "Passport",
+    "passportPlural": "Passports",
+    "expired": "Expired",
+    "verified": "Verified",
+    "exporter": "Exporter",
+    "issuedDate": "Issued Date",
+    "qualityGrade": "Quality Grade",
+    "grade": "Grade",
+    "viewPassport": "View Passport",
+    "modal": {
+      "title": "Digital Product Passport",
+      "subtitle": "Verifiable Credential (W3C Standard)",
+      "noQR": "No QR Data",
+      "batchId": "Batch ID",
+      "product": "Product",
+      "verifyLink": "Verify Legitimacy on Blockchain",
+      "qualityTitle": "Quality Inspection Data",
+      "moisture": "Moisture Content",
+      "pesticide": "Pesticide Residue",
+      "qualityGrade": "Quality Grade",
+      "organic": "Organic Certified",
+      "yes": "Yes",
+      "no": "No",
+      "logisticsTitle": "Logistics & Origin",
+      "origin": "Origin Location",
       "destination": "Destination",
-      "labReports": "Lab Reports",
-      "farmPhotos": "Farm Photos",
-      "none": "None"
+      "quantity": "Quantity",
+      "status": "Current Status",
+      "signedBy": "Cryptographically signed by"
+    }
+  },
+  "inspectionRequests": {
+    "title": "Inspection Requests",
+    "subtitle": "Review and record quality inspection results",
+    "searchPlaceholder": "Search by batch ID, exporter, or crop type...",
+    "table": {
+      "batchId": "Batch ID",
+      "exporter": "Exporter",
+      "cropType": "Crop Type",
+      "testsRequired": "Tests Required",
+      "quantity": "Quantity",
+      "dateSubmitted": "Date Submitted",
+      "status": "Status",
+      "action": "Action"
     },
-    "buttons": {
-      "back": "Back"
+    "standardTests": "Standard tests",
+    "more": "more",
+    "recordResults": "Record Results",
+    "noRequests": "No pending inspection requests",
+    "modal": {
+      "title": "Record Inspection Results",
+      "batch": "Batch",
+      "exporter": "Exporter",
+      "crop": "Crop",
+      "quantity": "Quantity",
+      "location": "Location",
+      "requestedTests": "Requested Tests",
+      "qualityGrade": "Quality Grade",
+      "selectGrade": "Select grade",
+      "gradeA": "Grade A - Premium Quality",
+      "gradeB": "Grade B - Standard Quality",
+      "gradeC": "Grade C - Basic Quality",
+      "organicCertified": "Organic Certified",
+      "notes": "Additional Notes",
+      "notesPlaceholder": "Enter any additional observations or remarks...",
+      "cancel": "Cancel",
+      "submit": "Issue Verifiable Credential",
+      "submitting": "Issuing..."
     },
-    "status": {
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "certified": "Certified"
+    "alerts": {
+      "success": "Inspection Recorded & Credential Issued Successfully!",
+      "error": "Error"
     }
   }
 }

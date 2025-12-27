@@ -1,22 +1,133 @@
 {
   "common": {
     "appName": "AgriExport",
-    "loading": "Lädt...",
+    "loading": "Laden...",
     "error": "Fehler",
     "success": "Erfolg"
   },
   "dashboard": {
     "title": "Dashboard",
+    "liveData": "Echtzeit-Daten von Farmen und Inspektionen",
+    "errorLoading": "Fehler beim Laden der Dashboard-Daten",
     "batchesSubmitted": "Eingereichte Chargen",
     "pendingInspections": "Ausstehende Inspektionen",
     "passportsIssued": "Ausgestellte Pässe",
-    "avgApprovalTime": "Durchschn. Genehmigung"
+    "avgApproval": "Durchschnittliche Genehmigungszeit",
+    "active": "Aktive Chargen",
+    "awaitingQA": "Warten auf Qualitätssicherung",
+    "verifiableCredentials": "Ausgestellte verifizierbare Nachweise",
+    "target24h": "Ziel: innerhalb von 24 Stunden",
+    "noData": "Keine Daten verfügbar",
+    "recentActivity": "Letzte Aktivitäten",
+    "noRecentActivity": "Keine aktuellen Aktivitäten anzuzeigen"
   },
-  "batch": {
-    "newBatch": "Neue Charge",
-    "batchId": "Chargen-ID",
-    "cropType": "Erntetyp",
-    "quantity": "Menge",
-    "status": "Status"
+  "batchSubmission": {
+    "title": "Chargeneinreichung",
+    "description": "Alle Chargen und deren Status anzeigen",
+    "errorLoading": "Fehler beim Laden der Chargendaten",
+    "buttons": {
+      "newBatch": "Neue Charge"
+    },
+    "stats": {
+      "totalBatches": "Gesamtzahl der Chargen",
+      "approved": "Genehmigt",
+      "approvedDesc": "Anzahl der genehmigten Chargen",
+      "pending": "Ausstehend",
+      "pendingDesc": "Chargen in Bearbeitung",
+      "avgProcessingTime": "Durchschnittliche Bearbeitungszeit",
+      "targetTime": "Zielzeit",
+      "active": "Aktiv"
+    },
+    "tableTitle": "Chargenliste",
+    "table": {
+      "batchId": "Chargen-ID",
+      "crop": "Kulturpflanze",
+      "destination": "Zielort",
+      "status": "Status",
+      "date": "Datum"
+    },
+    "noData": "Keine Daten verfügbar"
+  },
+  "digitalPassports": {
+    "title": "Digitale Produkt-Pässe",
+    "subtitle": "Verifizierbare Nachweise für genehmigte Export-Chargen",
+    "loading": "Lade digitale Pässe...",
+    "errorTitle": "Fehler",
+    "noPassportsTitle": "Noch keine Pässe ausgestellt",
+    "noPassportsDesc": "Digitale Pässe werden automatisch generiert, wenn eine Charge von einer Qualitätssicherungsagentur zertifiziert wird.",
+    "active": "Aktiv",
+    "passportSingular": "Pass",
+    "passportPlural": "Pässe",
+    "expired": "Abgelaufen",
+    "verified": "Verifiziert",
+    "exporter": "Exporteur",
+    "issuedDate": "Ausstellungsdatum",
+    "qualityGrade": "Qualitätsgrad",
+    "grade": "Grad",
+    "viewPassport": "Pass anzeigen",
+    "modal": {
+      "title": "Digitaler Produkt-Pass",
+      "subtitle": "Verifizierbarer Nachweis (W3C-Standard)",
+      "noQR": "Keine QR-Daten",
+      "batchId": "Chargen-ID",
+      "product": "Produkt",
+      "verifyLink": "Legitimität auf der Blockchain überprüfen",
+      "qualityTitle": "Qualitätsinspektion-Daten",
+      "moisture": "Feuchtigkeitsgehalt",
+      "pesticide": "Pestizidrückstände",
+      "qualityGrade": "Qualitätsgrad",
+      "organic": "Bio-zertifiziert",
+      "yes": "Ja",
+      "no": "Nein",
+      "logisticsTitle": "Logistik und Ursprung",
+      "origin": "Ursprungsort",
+      "destination": "Zielort",
+      "quantity": "Menge",
+      "status": "Aktueller Status",
+      "signedBy": "Kryptografisch signiert von"
+    }
+  },
+  "inspectionRequests": {
+    "title": "Inspektionsanfragen",
+    "subtitle": "Qualitätsinspektionsergebnisse überprüfen und aufzeichnen",
+    "searchPlaceholder": "Suchen nach Chargen-ID, Exporteur oder Kulturpflanzenart...",
+    "table": {
+      "batchId": "Chargen-ID",
+      "exporter": "Exporteur",
+      "cropType": "Kulturpflanzenart",
+      "testsRequired": "Erforderliche Tests",
+      "quantity": "Menge",
+      "dateSubmitted": "Einreichungsdatum",
+      "status": "Status",
+      "action": "Aktion"
+    },
+    "standardTests": "Standard-Tests",
+    "more": "mehr",
+    "recordResults": "Ergebnisse aufzeichnen",
+    "noRequests": "Keine ausstehenden Inspektionsanfragen",
+    "modal": {
+      "title": "Inspektionsergebnisse aufzeichnen",
+      "batch": "Charge",
+      "exporter": "Exporteur",
+      "crop": "Kulturpflanze",
+      "quantity": "Menge",
+      "location": "Ort",
+      "requestedTests": "Erforderliche Tests",
+      "qualityGrade": "Qualitätsgrad",
+      "selectGrade": "Grad auswählen",
+      "gradeA": "Grad A - Premium-Qualität",
+      "gradeB": "Grad B - Standard-Qualität",
+      "gradeC": "Grad C - Basis-Qualität",
+      "organicCertified": "Bio-zertifiziert",
+      "notes": "Zusätzliche Notizen",
+      "notesPlaceholder": "Weitere Beobachtungen oder Bemerkungen eingeben...",
+      "cancel": "Abbrechen",
+      "submit": "Verifizierbaren Nachweis ausstellen",
+      "submitting": "Ausstellen..."
+    },
+    "alerts": {
+      "success": "Inspektion aufgezeichnet und Nachweis erfolgreich ausgestellt!",
+      "error": "Fehler"
+    }
   }
 }

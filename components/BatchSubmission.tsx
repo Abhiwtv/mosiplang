@@ -1,15 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, ClipboardCheck, Package, Clock, TrendingUp } from 'lucide-react';
+import { Plus, ClipboardCheck, Package, Clock, TrendingUp, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface Batch {
-  batchId: string;
-  crop: string;
-  destination: string;
-  status: 'approved' | 'pending';
-  date: string;
+  id: string;
+  batchNumber: string;
+  cropType: string;
+  destinationCountry: string;
+  status: string;
+  createdAt: string;
+  quantity: number;
+  unit: string;
 }
 
 interface BatchData {
@@ -19,30 +22,147 @@ interface BatchData {
     pending: number;
     avgProcessingTime: string;
   };
-  batches: Batch[];
+  batches: Array<{
+    batchId: string;
+    crop: string;
+    destination: string;
+    status: 'approved' | 'pending';
+    date: string;
+  }>;
   recentActivity: { id: string; description: string; time: string; status: string }[];
 }
+
+interface NewBatchForm {
+  cropType: string;
+  variety: string;
+  quantity: string;
+  unit: string;
+  location: string;
+  pinCode: string;
+  harvestDate: string;
+  destinationCountry: string;
+  tests: string[];
+}
+
+const AVAILABLE_TESTS = [
+  'Moisture Content',
+  'Pesticide Residue',
+  'Heavy Metals',
+  'Aflatoxin',
+  'Microbial Load',
+  'Organic Certification'
+];
 
 export function BatchSubmission() {
   const t = useTranslations('batchSubmission');
   const [data, setData] = useState<BatchData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState<NewBatchForm>({
+    cropType: '',
+    variety: 'Grade A',
+    quantity: '',
+    unit: 'kg',
+    location: '',
+    pinCode: '',
+    harvestDate: '',
+    destinationCountry: '',
+    tests: []
+  });
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch('/api/batches');
-        if (!res.ok) throw new Error('Failed to fetch batch data');
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        console.error('BatchSubmission Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadData();
   }, []);
+
+  async function loadData() {
+    try {
+      const res = await fetch('/api/batches');
+      if (!res.ok) throw new Error('Failed to fetch batch data');
+      const batches: Batch[] = await res.json();
+
+      const approved = batches.filter(b => b.status === 'APPROVED').length;
+      const pending = batches.filter(b => ['PENDING', 'IN_PROGRESS'].includes(b.status)).length;
+
+      const formattedBatches = batches.slice(0, 10).map(b => ({
+        batchId: b.batchNumber,
+        crop: b.cropType,
+        destination: b.destinationCountry,
+        status: (b.status === 'APPROVED' ? 'approved' : 'pending') as 'approved' | 'pending',
+        date: new Date(b.createdAt).toLocaleDateString('en-IN')
+      }));
+
+      const recentActivity = batches.slice(0, 5).map(b => ({
+        id: b.id,
+        description: `Batch ${b.batchNumber} - ${b.cropType} submitted`,
+        time: new Date(b.createdAt).toLocaleTimeString('en-IN', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        status: b.status === 'APPROVED' ? 'success' : 'warning'
+      }));
+
+      setData({
+        stats: {
+          totalBatches: batches.length,
+          approved,
+          pending,
+          avgProcessingTime: '24h'
+        },
+        batches: formattedBatches,
+        recentActivity
+      });
+    } catch (err) {
+      console.error('BatchSubmission Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/batches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) throw new Error('Failed to create batch');
+
+      // Reset form and reload data
+      setFormData({
+        cropType: '',
+        variety: 'Grade A',
+        quantity: '',
+        unit: 'kg',
+        location: '',
+        pinCode: '',
+        harvestDate: '',
+        destinationCountry: '',
+        tests: []
+      });
+      setShowModal(false);
+      await loadData();
+      alert('Batch created successfully!');
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Failed to create batch. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function toggleTest(test: string) {
+    setFormData(prev => ({
+      ...prev,
+      tests: prev.tests.includes(test)
+        ? prev.tests.filter(t => t !== test)
+        : [...prev.tests, test]
+    }));
+  }
 
   if (loading) {
     return (
@@ -65,7 +185,10 @@ export function BatchSubmission() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-semibold text-slate-900">{t('title')}</h1>
-        <button className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">
+        <button 
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700 transition-colors"
+        >
           <Plus className="w-4 h-4" />
           {t('buttons.newBatch')}
         </button>
@@ -204,6 +327,177 @@ export function BatchSubmission() {
           </div>
         </div>
       </div>
+
+      {/* New Batch Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-xl font-semibold text-slate-900">Submit New Batch</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Crop Type <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.cropType}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cropType: e.target.value }))}
+                    placeholder="e.g., Basmati Rice"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Variety
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.variety}
+                    onChange={(e) => setFormData(prev => ({ ...prev, variety: e.target.value }))}
+                    placeholder="e.g., Grade A"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Quantity <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+                    placeholder="1000"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Unit <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={formData.unit}
+                    onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+                    className="text-slate-700 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="ton">Tons</option>
+                    <option value="quintal">Quintals</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Location <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="e.g., Punjab, India"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    PIN Code <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    pattern="[0-9]{6}"
+                    value={formData.pinCode}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pinCode: e.target.value }))}
+                    placeholder="400092"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Harvest Date <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.harvestDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, harvestDate: e.target.value }))}
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Destination Country <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.destinationCountry}
+                    onChange={(e) => setFormData(prev => ({ ...prev, destinationCountry: e.target.value }))}
+                    placeholder="e.g., United States"
+                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Required Tests
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {AVAILABLE_TESTS.map(test => (
+                    <label key={test} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.tests.includes(test)}
+                        onChange={() => toggleTest(test)}
+                        className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                      />
+                      <span className="text-sm text-slate-700">{test}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-6 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Submitting...' : 'Submit Batch'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

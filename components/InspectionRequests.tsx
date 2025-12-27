@@ -1,17 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Search, FileText, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRole } from '../contexts/RoleContext';
 import type { Batch } from '../types';
 
 interface InspectionFormData {
+  [key: string]: string | boolean;
   moistureLevel: string;
   pesticideContent: string;
+  heavyMetals: string;
+  aflatoxin: string;
+  microbialLoad: string;
   organicStatus: boolean;
   qualityGrade: string;
   notes: string;
 }
 
+const TEST_FIELD_MAP: Record<string, { key: keyof InspectionFormData; label: string; type: 'number' | 'text'; unit?: string; placeholder?: string }> = {
+  'Moisture Content': { key: 'moistureLevel', label: 'Moisture Level', type: 'number', unit: '%', placeholder: 'e.g., 12.5' },
+  'Pesticide Residue': { key: 'pesticideContent', label: 'Pesticide Content', type: 'number', unit: 'ppm', placeholder: 'e.g., 0.15' },
+  'Heavy Metals': { key: 'heavyMetals', label: 'Heavy Metals', type: 'number', unit: 'ppm', placeholder: 'e.g., 0.05' },
+  'Aflatoxin': { key: 'aflatoxin', label: 'Aflatoxin Level', type: 'number', unit: 'ppb', placeholder: 'e.g., 4.2' },
+  'Microbial Load': { key: 'microbialLoad', label: 'Microbial Load', type: 'text', placeholder: 'e.g., 10^3 CFU/g' },
+  'Organic Certification': { key: 'organicStatus', label: 'Organic Certified', type: 'number' },
+};
+
 export function InspectionRequests() {
+  const t = useTranslations('inspectionRequests');
   const { userName } = useRole();
   const [batches, setBatches] = useState<Batch[]>([]);
   const [filteredBatches, setFilteredBatches] = useState<Batch[]>([]);
@@ -22,6 +37,9 @@ export function InspectionRequests() {
   const [formData, setFormData] = useState<InspectionFormData>({
     moistureLevel: '',
     pesticideContent: '',
+    heavyMetals: '',
+    aflatoxin: '',
+    microbialLoad: '',
     organicStatus: false,
     qualityGrade: '',
     notes: '',
@@ -46,7 +64,6 @@ export function InspectionRequests() {
     }
   }, [searchTerm, batches]);
 
-  // --- 1. FETCH BATCHES FROM API ---
   async function loadBatches() {
     try {
       const response = await fetch('/api/inspections/pending');
@@ -66,6 +83,9 @@ export function InspectionRequests() {
     setFormData({
       moistureLevel: '',
       pesticideContent: '',
+      heavyMetals: '',
+      aflatoxin: '',
+      microbialLoad: '',
       organicStatus: false,
       qualityGrade: '',
       notes: '',
@@ -77,7 +97,6 @@ export function InspectionRequests() {
     setSelectedBatch(null);
   }
 
-  // --- 2. SUBMIT INSPECTION TO API ---
   async function handleSubmitInspection(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedBatch) return;
@@ -85,7 +104,6 @@ export function InspectionRequests() {
     setIsSubmitting(true);
 
     try {
-      // Call the "Approve & Issue VC" API
       const response = await fetch('/api/inspections/approve', {
         method: 'POST',
         headers: {
@@ -96,6 +114,9 @@ export function InspectionRequests() {
           inspectorName: userName,
           moisture: formData.moistureLevel,
           pesticide: formData.pesticideContent,
+          heavyMetals: formData.heavyMetals,
+          aflatoxin: formData.aflatoxin,
+          microbialLoad: formData.microbialLoad,
           organic: formData.organicStatus,
           grade: formData.qualityGrade,
           notes: formData.notes
@@ -108,14 +129,13 @@ export function InspectionRequests() {
         throw new Error(result.error || 'Inspection failed');
       }
 
-      // Success! Refresh the list to remove the approved batch
       await loadBatches();
       closeModal();
-      alert("Inspection Recorded & Credential Issued Successfully!");
+      alert(t('alerts.success'));
 
     } catch (error: any) {
       console.error("Submission error:", error);
-      alert(`Error: ${error.message}`);
+      alert(`${t('alerts.error')}: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -126,7 +146,6 @@ export function InspectionRequests() {
       pending: 'bg-amber-100 text-amber-700 border-amber-200',
       in_progress: 'bg-slate-100 text-slate-700 border-slate-200',
     };
-    // Handle case-insensitivity
     const key = status.toLowerCase() as keyof typeof styles;
     return styles[key] || styles.pending;
   }
@@ -140,12 +159,15 @@ export function InspectionRequests() {
     });
   }
 
+  const requestedTests = selectedBatch?.tests || [];
+  const hasOrganicTest = requestedTests.includes('Organic Certification');
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Inspection Requests</h1>
-          <p className="text-sm text-slate-600 mt-1">Review and record quality inspection results</p>
+          <h1 className="text-3xl font-semibold text-slate-900">{t('title')}</h1>
+          <p className="text-sm text-slate-600 mt-1">{t('subtitle')}</p>
         </div>
       </div>
 
@@ -155,7 +177,7 @@ export function InspectionRequests() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by batch ID, exporter, or crop type..."
+              placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="text-slate-600 placeholder:text-slate-300 w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
@@ -168,25 +190,28 @@ export function InspectionRequests() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Batch ID
+                  {t('table.batchId')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Exporter
+                  {t('table.exporter')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Crop Type
+                  {t('table.cropType')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Quantity
+                  {t('table.testsRequired')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Date Submitted
+                  {t('table.quantity')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Status
+                  {t('table.dateSubmitted')}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                  {t('table.status')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Action
+                  {t('table.action')}
                 </th>
               </tr>
             </thead>
@@ -201,6 +226,22 @@ export function InspectionRequests() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-slate-700">{batch.crop_type}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {(batch.tests && batch.tests.length > 0) ? (
+                        batch.tests.slice(0, 2).map((test, idx) => (
+                          <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">
+                            {test}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-slate-400">{t('standardTests')}</span>
+                      )}
+                      {batch.tests && batch.tests.length > 2 && (
+                        <span className="text-xs text-slate-500">+{batch.tests.length - 2} {t('more')}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-slate-700">{(batch.quantity_kg / 1000).toFixed(1)}t</span>
@@ -218,7 +259,7 @@ export function InspectionRequests() {
                       onClick={() => openInspectionModal(batch)}
                       className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
                     >
-                      Record Results
+                      {t('recordResults')}
                     </button>
                   </td>
                 </tr>
@@ -229,7 +270,7 @@ export function InspectionRequests() {
           {filteredBatches.length === 0 && (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-600">No pending inspection requests</p>
+              <p className="text-slate-600">{t('noRequests')}</p>
             </div>
           )}
         </div>
@@ -239,10 +280,10 @@ export function InspectionRequests() {
       {showModal && selectedBatch && (
         <div className="fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">Record Inspection Results</h2>
-                <p className="text-sm text-slate-600 mt-1">Batch: {selectedBatch.batch_number}</p>
+                <h2 className="text-xl font-semibold text-slate-900">{t('modal.title')}</h2>
+                <p className="text-sm text-slate-600 mt-1">{t('modal.batch')}: {selectedBatch.batch_number}</p>
               </div>
               <button
                 onClick={closeModal}
@@ -256,59 +297,67 @@ export function InspectionRequests() {
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-600">Exporter:</span>
+                    <span className="text-slate-600">{t('modal.exporter')}:</span>
                     <span className="ml-2 font-medium text-slate-900">{selectedBatch.exporter_name}</span>
                   </div>
                   <div>
-                    <span className="text-slate-600">Crop:</span>
+                    <span className="text-slate-600">{t('modal.crop')}:</span>
                     <span className="ml-2 font-medium text-slate-900">{selectedBatch.crop_type}</span>
                   </div>
                   <div>
-                    <span className="text-slate-600">Quantity:</span>
+                    <span className="text-slate-600">{t('modal.quantity')}:</span>
                     <span className="ml-2 font-medium text-slate-900">{selectedBatch.quantity_kg} kg</span>
                   </div>
                   <div>
-                    <span className="text-slate-600">Location:</span>
+                    <span className="text-slate-600">{t('modal.location')}:</span>
                     <span className="ml-2 font-medium text-slate-900">{selectedBatch.location}</span>
                   </div>
                 </div>
+                {requestedTests.length > 0 && (
+                  <div className="pt-2 border-t border-slate-200">
+                    <p className="text-xs text-slate-600 mb-2">{t('modal.requestedTests')}:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {requestedTests.map((test, idx) => (
+                        <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                          {test}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
+              {/* Dynamic Test Fields */}
               <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Moisture Level (%) <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    required
-                    value={formData.moistureLevel}
-                    onChange={(e) => setFormData(prev => ({ ...prev, moistureLevel: e.target.value }))}
-                    placeholder="e.g., 12.5"
-                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                </div>
+                {requestedTests
+                  .filter(test => test !== 'Organic Certification')
+                  .map((testName) => {
+                    const field = TEST_FIELD_MAP[testName];
+                    if (!field) return null;
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Pesticide Content (ppm) <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={formData.pesticideContent}
-                    onChange={(e) => setFormData(prev => ({ ...prev, pesticideContent: e.target.value }))}
-                    placeholder="e.g., 0.15"
-                    className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                </div>
+                    return (
+                      <div key={testName}>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          {field.label} {field.unit && `(${field.unit})`} <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type={field.type}
+                          step="0.01"
+                          required
+                          value={formData[field.key] as string}
+                          onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
+                          placeholder={field.placeholder}
+                          className="text-slate-600 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        />
+                      </div>
+                    );
+                  })}
               </div>
 
+              {/* Quality Grade */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Quality Grade <span className="text-rose-500">*</span>
+                  {t('modal.qualityGrade')} <span className="text-rose-500">*</span>
                 </label>
                 <select
                   required
@@ -316,33 +365,37 @@ export function InspectionRequests() {
                   onChange={(e) => setFormData(prev => ({ ...prev, qualityGrade: e.target.value }))}
                   className="text-slate-700 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
-                  <option value="">Select grade</option>
-                  <option value="A">Grade A - Premium Quality</option>
-                  <option value="B">Grade B - Standard Quality</option>
-                  <option value="C">Grade C - Basic Quality</option>
+                  <option value="">{t('modal.selectGrade')}</option>
+                  <option value="A">{t('modal.gradeA')}</option>
+                  <option value="B">{t('modal.gradeB')}</option>
+                  <option value="C">{t('modal.gradeC')}</option>
                 </select>
               </div>
 
-              <div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.organicStatus}
-                    onChange={(e) => setFormData(prev => ({ ...prev, organicStatus: e.target.checked }))}
-                    className="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
-                  />
-                  <span className="text-sm font-medium text-slate-700">Organic Certified</span>
-                </label>
-              </div>
+              {/* Organic Checkbox */}
+              {hasOrganicTest && (
+                <div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.organicStatus}
+                      onChange={(e) => setFormData(prev => ({ ...prev, organicStatus: e.target.checked }))}
+                      className="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                    />
+                    <span className="text-sm font-medium text-slate-700">{t('modal.organicCertified')}</span>
+                  </label>
+                </div>
+              )}
 
+              {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Additional Notes
+                  {t('modal.notes')}
                 </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Enter any additional observations or remarks..."
+                  placeholder={t('modal.notesPlaceholder')}
                   rows={4}
                   className="text-slate-500 w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
@@ -354,14 +407,14 @@ export function InspectionRequests() {
                   onClick={closeModal}
                   className="px-6 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t('modal.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Issuing...' : 'Issue Verifiable Credential'}
+                  {isSubmitting ? t('modal.submitting') : t('modal.submit')}
                 </button>
               </div>
             </form>

@@ -1,27 +1,44 @@
 {
   "common": {
-    "appName": "एग्रीएक्सपोर्ट",
+    "appName": "कृषि निर्यात",
     "loading": "लोड हो रहा है...",
     "error": "त्रुटि",
     "success": "सफलता"
   },
+  "dashboard": {
+    "title": "डैशबोर्ड",
+    "liveData": "फार्म और निरीक्षण से लाइव डेटा",
+    "errorLoading": "डैशबोर्ड डेटा लोड करने में विफल",
+    "batchesSubmitted": "बैच जमा किए गए",
+    "pendingInspections": "लंबित निरीक्षण",
+    "passportsIssued": "पासपोर्ट जारी किए गए",
+    "avgApproval": "औसत अनुमोदन समय",
+    "active": "सक्रिय बैच",
+    "awaitingQA": "जीए की प्रतीक्षा में",
+    "verifiableCredentials": "सत्यापन योग्य प्रमाण पत्र जारी किए गए",
+    "target24h": "लक्ष्य: 24 घंटे के भीतर",
+    "noData": "कोई डेटा उपलब्ध नहीं",
+    "recentActivity": "हाल की गतिविधि",
+    "noRecentActivity": "दिखाने के लिए कोई हाल की गतिविधि नहीं"
+  },
   "batchSubmission": {
-    "title": "बैच सबमिशन",
-    "description": "यहां सभी बैच और उनकी स्थिति देखें।",
+    "title": "बैच जमा करना",
+    "description": "सभी बैच और उनकी स्थिति देखें",
+    "errorLoading": "बैच डेटा लोड करने में विफल",
     "buttons": {
-      "newBatch": "नया बैच जोड़ें"
+      "newBatch": "नया बैच"
     },
     "stats": {
       "totalBatches": "कुल बैच",
-      "approved": "स्वीकृत",
-      "approvedDesc": "स्वीकृत बैच की संख्या।",
+      "approved": "अनुमोदित",
+      "approvedDesc": "अनुमोदित बैचों की संख्या",
       "pending": "लंबित",
-      "pendingDesc": "लंबित बैच की संख्या।",
-      "avgProcessingTime": "औसत प्रोसेसिंग समय",
-      "targetTime": "लक्षित समय",
+      "pendingDesc": "समीक्षा की प्रतीक्षा में बैच",
+      "avgProcessingTime": "औसत प्रसंस्करण समय",
+      "targetTime": "लक्ष्य समय",
       "active": "सक्रिय"
     },
-    "tableTitle": "बैच विवरण",
+    "tableTitle": "बैच सूची",
     "table": {
       "batchId": "बैच आईडी",
       "crop": "फसल",
@@ -31,8 +48,86 @@
     },
     "noData": "कोई डेटा उपलब्ध नहीं"
   },
-  "dashboard": {
-    "recentActivity": "हाल की गतिविधि",
-    "noRecentActivity": "कोई हाल की गतिविधि नहीं"
+  "digitalPassports": {
+    "title": "डिजिटल उत्पाद पासपोर्ट",
+    "subtitle": "निर्यात बैचों के लिए सत्यापन योग्य प्रमाण पत्र",
+    "loading": "डिजिटल पासपोर्ट लोड हो रहे हैं...",
+    "errorTitle": "त्रुटि",
+    "noPassportsTitle": "अब तक कोई पासपोर्ट जारी नहीं किया गया",
+    "noPassportsDesc": "डिजिटल पासपोर्ट स्वचालित रूप से जेनरेट किए जाते हैं जब एक बैच को जीए एजेंसी द्वारा प्रमाणित किया जाता है।",
+    "active": "सक्रिय",
+    "passportSingular": "पासपोर्ट",
+    "passportPlural": "पासपोर्ट",
+    "expired": "समाप्त",
+    "verified": "सत्यापित",
+    "exporter": "निर्यातक",
+    "issuedDate": "जारी की गई तारीख",
+    "qualityGrade": "गुणवत्ता ग्रेड",
+    "grade": "ग्रेड",
+    "viewPassport": "पासपोर्ट देखें",
+    "modal": {
+      "title": "डिजिटल उत्पाद पासपोर्ट",
+      "subtitle": "सत्यापन योग्य प्रमाण पत्र (डब्ल्यू3सी मानक)",
+      "noQR": "कोई क्यूआर डेटा नहीं",
+      "batchId": "बैच आईडी",
+      "product": "उत्पाद",
+      "verifyLink": "ब्लॉकचेन पर वैधता की जांच करें",
+      "qualityTitle": "गुणवत्ता निरीक्षण डेटा",
+      "moisture": "नमी सामग्री",
+      "pesticide": "कीटनाशक अवशेष",
+      "qualityGrade": "गुणवत्ता ग्रेड",
+      "organic": "जैविक प्रमाणित",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "logisticsTitle": "लॉजिस्टिक्स और मूल",
+      "origin": "मूल स्थान",
+      "destination": "गंतव्य",
+      "quantity": "मात्रा",
+      "status": "वर्तमान स्थिति",
+      "signedBy": "क्रिप्टोग्राफिक रूप से हस्ताक्षरित द्वारा"
+    }
+  },
+  "inspectionRequests": {
+    "title": "निरीक्षण अनुरोध",
+    "subtitle": "गुणवत्ता निरीक्षण परिणामों की समीक्षा और रिकॉर्ड करें",
+    "searchPlaceholder": "बैच आईडी, निर्यातक, या फसल प्रकार द्वारा खोजें...",
+    "table": {
+      "batchId": "बैच आईडी",
+      "exporter": "निर्यातक",
+      "cropType": "फसल प्रकार",
+      "testsRequired": "परीक्षण आवश्यक",
+      "quantity": "मात्रा",
+      "dateSubmitted": "प्रस्तुत की गई तारीख",
+      "status": "स्थिति",
+      "action": "क्रिया"
+    },
+    "standardTests": "मानक परीक्षण",
+    "more": "अधिक",
+    "recordResults": "परिणाम रिकॉर्ड करें",
+    "noRequests": "कोई लंबित निरीक्षण अनुरोध नहीं",
+    "modal": {
+      "title": "निरीक्षण परिणाम रिकॉर्ड करें",
+      "batch": "बैच",
+      "exporter": "निर्यातक",
+      "crop": "फसल",
+      "quantity": "मात्रा",
+      "location": "स्थान",
+      "requestedTests": "अनुरोधित परीक्षण",
+      "qualityGrade": "गुणवत्ता ग्रेड",
+      "selectGrade": "ग्रेड चुनें",
+      "gradeA": "ग्रेड ए - प्रीमियम गुणवत्ता",
+      "gradeB": "ग्रेड बी - मानक गुणवत्ता",
+      "gradeC": "ग्रेड सी - बुनियादी गुणवत्ता",
+      "organicCertified": "जैविक प्रमाणित",
+      "notes": "अतिरिक्त नोट्स",
+      "notesPlaceholder": "कोई अतिरिक्त अवलोकन या टिप्पणियां दर्ज करें...",
+      "cancel": "रद्द करें",
+      "submit": "सत्यापन योग्य प्रमाण पत्र जारी करें",
+      "submitting": "जारी करना..."
+    },
+    "alerts": {
+      "success": "निरीक्षण रिकॉर्ड किया गया और प्रमाण पत्र सफलतापूर्वक जारी किया गया!",
+      "error": "त्रुटि"
+    }
   }
 }
