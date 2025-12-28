@@ -43,15 +43,13 @@ export async function GET(
     const response = {
       status: isExpired ? "EXPIRED" : "VALID",
       
-      notice: "⚠️ This endpoint provides METADATA ONLY. For cryptographic verification, use Inji Verify.",
-      verification_required: true,
-      
       certificate_id: certificate.id,
       batch_number: certificate.batchNumber,
       
       verification_urls: {
         inji_verify: vc?.verifyUrl || null,
-        this_endpoint: `${process.env.NEXT_PUBLIC_BASE_URL}/api/verify/${certId}`
+        this_endpoint: `${process.env.NEXT_PUBLIC_BASE_URL}/api/verify/${certId}`,
+        public_page: `${process.env.NEXT_PUBLIC_BASE_URL}/verify/${certId}` // Add this
       },
       
       issued_at: certificate.issuedAt,
@@ -87,8 +85,6 @@ export async function GET(
         pesticide_residue: inspection.pesticideResidue,
         organic: inspection.organic,
         grade: inspection.grade,
-        heavy_metals: inspection.heavyMetals,
-        iso_code: inspection.isoCode,
         inspection_date: inspection.inspectedAt,
         inspector: {
           name: inspection.inspector?.name || null,
@@ -97,34 +93,11 @@ export async function GET(
         notes: inspection.notes
       } : null,
       
-      credential_data: vc?.vcJson || null,
-      
-      signature: {
-        value: vc?.signature || null,
-        note: "Use Inji Verify to validate cryptographic signature"
-      },
-      
-      how_to_verify: {
-        recommended: {
-          method: "Inji Verify",
-          url: vc?.verifyUrl || null,
-          description: "Cryptographically verify credential signature, issuer DID, and revocation status",
-          steps: [
-            "Visit Inji Verify URL above",
-            "Upload credential or scan QR code",
-            "Inji Verify checks: signature validity, issuer DID authenticity, expiration, revocation"
-          ]
-        },
-        alternative: {
-          method: "Manual Verification",
-          description: "Verify using W3C VC verification libraries"
-        }
-      },
+      credential_data: vc?.vcJson || null, // Full VC for download
       
       warnings: [
         isExpired && "⚠️ Certificate has EXPIRED",
         !vc?.issuerDid && "⚠️ Issuer DID not found",
-        !vc?.verifyUrl && "⚠️ Verification URL not available"
       ].filter(Boolean)
     };
 

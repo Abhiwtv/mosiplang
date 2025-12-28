@@ -22,14 +22,14 @@
     "noRecentActivity": "Keine aktuellen Aktivitäten anzuzeigen"
   },
   "batchSubmission": {
-    "title": "Chargeneinreichung",
+    "title": "Chargeneingabe",
     "description": "Alle Chargen und deren Status anzeigen",
     "errorLoading": "Fehler beim Laden der Chargendaten",
     "buttons": {
       "newBatch": "Neue Charge"
     },
     "stats": {
-      "totalBatches": "Gesamtzahl der Chargen",
+      "totalBatches": "Gesamte Chargen",
       "approved": "Genehmigt",
       "approvedDesc": "Anzahl der genehmigten Chargen",
       "pending": "Ausstehend",
@@ -41,7 +41,7 @@
     "tableTitle": "Chargenliste",
     "table": {
       "batchId": "Chargen-ID",
-      "crop": "Kulturpflanze",
+      "crop": "Kultur",
       "destination": "Zielort",
       "status": "Status",
       "date": "Datum"
@@ -71,8 +71,8 @@
       "noQR": "Keine QR-Daten",
       "batchId": "Chargen-ID",
       "product": "Produkt",
-      "verifyLink": "Legitimität auf der Blockchain überprüfen",
-      "qualityTitle": "Qualitätsinspektion-Daten",
+      "verifyLink": "Echtheit auf Blockchain überprüfen",
+      "qualityTitle": "Qualitätsinspektionsdaten",
       "moisture": "Feuchtigkeitsgehalt",
       "pesticide": "Pestizidrückstände",
       "qualityGrade": "Qualitätsgrad",
@@ -80,7 +80,7 @@
       "yes": "Ja",
       "no": "Nein",
       "logisticsTitle": "Logistik und Ursprung",
-      "origin": "Ursprungsort",
+      "origin": "Ursprungsland",
       "destination": "Zielort",
       "quantity": "Menge",
       "status": "Aktueller Status",
@@ -90,11 +90,11 @@
   "inspectionRequests": {
     "title": "Inspektionsanfragen",
     "subtitle": "Qualitätsinspektionsergebnisse überprüfen und aufzeichnen",
-    "searchPlaceholder": "Suchen nach Chargen-ID, Exporteur oder Kulturpflanzenart...",
+    "searchPlaceholder": "Suchen nach Chargen-ID, Exporteur oder Kulturart...",
     "table": {
       "batchId": "Chargen-ID",
       "exporter": "Exporteur",
-      "cropType": "Kulturpflanzenart",
+      "cropType": "Kulturart",
       "testsRequired": "Erforderliche Tests",
       "quantity": "Menge",
       "dateSubmitted": "Einreichungsdatum",
@@ -109,7 +109,7 @@
       "title": "Inspektionsergebnisse aufzeichnen",
       "batch": "Charge",
       "exporter": "Exporteur",
-      "crop": "Kulturpflanze",
+      "crop": "Kultur",
       "quantity": "Menge",
       "location": "Ort",
       "requestedTests": "Erforderliche Tests",
@@ -123,7 +123,7 @@
       "notesPlaceholder": "Weitere Beobachtungen oder Bemerkungen eingeben...",
       "cancel": "Abbrechen",
       "submit": "Verifizierbaren Nachweis ausstellen",
-      "submitting": "Ausstellen..."
+      "submitting": "Ausstellung..."
     },
     "alerts": {
       "success": "Inspektion aufgezeichnet und Nachweis erfolgreich ausgestellt!",

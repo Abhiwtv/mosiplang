@@ -92,10 +92,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate QR
-    const finalVerifyUrl = vcResponse 
-      ? injiCertify.generateVerifyUrl(vcResponse.credentialId)
-      : `${BASE_URL}/api/verify/${certificateId}`;
-      
+    // Always use YOUR verification page, not external Inji
+    const finalVerifyUrl = `${BASE_URL}/verify/${certificateId}`;
     const qrCode = await QRCode.toDataURL(finalVerifyUrl);
 
     // ---------------------------------------------------------

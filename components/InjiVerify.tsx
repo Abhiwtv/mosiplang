@@ -13,7 +13,8 @@ import {
   Camera, 
   QrCode,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Download
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -39,36 +40,65 @@ export default function InjiVerify() {
   }, [isScanning]);
 
   const handleScanSuccess = async (decodedText: string) => {
-    await stopCamera();
-    setLoading(true);
-    setError(null);
+  await stopCamera();
+  setLoading(true);
+  setError(null);
 
-    try {
-        const response = await fetch(decodedText);
-        const data = await response.json();
-        
-        if (response.ok && data.status !== 'NOT_FOUND' && data.status !== 'ERROR') {
-            setScanResult({
-                status: data.status,
-                product: data.product?.type || "Unknown Product",
-                batchNumber: data.product?.batch_number,
-                exporter: data.holder?.name,
-                issuer: data.issuer?.name,
-                quality: {
-                    grade: data.quality_metrics?.grade,
-                    organic: data.quality_metrics?.organic
-                },
-                verifyUrl: data.verification_urls?.inji_verify 
-            });
-        } else {
-            setError(data.message || "This certificate could not be verified in our records.");
-        }
-    } catch (err: any) {
-        setError("Network error. Please ensure the QR contains a valid verification link.");
-    } finally {
-        setLoading(false);
+  try {
+    console.log("Scanned QR:", decodedText);
+
+    // Extract certificate ID from URL
+    let certId = null;
+    
+    // Handle different URL formats
+    if (decodedText.includes('/verify/')) {
+      // Format: https://yourdomain.com/verify/cert-123-456
+      certId = decodedText.split('/verify/')[1];
+    } else if (decodedText.includes('/api/verify/')) {
+      // Format: https://yourdomain.com/api/verify/cert-123-456
+      certId = decodedText.split('/api/verify/')[1];
+    } else {
+      // Assume it's just the certificate ID
+      certId = decodedText;
     }
-  };
+
+    if (!certId) {
+      setError("Invalid QR code format. Please scan a valid certificate QR code.");
+      setLoading(false);
+      return;
+    }
+
+    // Fetch certificate data from YOUR API
+    const response = await fetch(`/api/verify/${certId}`);
+    const data = await response.json();
+    
+    if (!response.ok || data.status === 'NOT_FOUND' || data.status === 'ERROR') {
+      setError(data.message || "Certificate not found in our records.");
+      setLoading(false);
+      return;
+    }
+
+    // Map the API response to your UI format
+    setScanResult({
+      status: data.status, // "VALID" or "EXPIRED"
+      product: data.product?.type || "Unknown Product",
+      batchNumber: data.batch_number || data.product?.batch_number,
+      exporter: data.holder?.name || data.holder?.organization,
+      issuer: data.issuer?.name,
+      quality: {
+        grade: data.quality_metrics?.grade || "N/A",
+        organic: data.quality_metrics?.organic || false
+      },
+      verifyUrl: data.verification_urls?.inji_verify || `/verify/${certId}`
+    });
+
+  } catch (err: any) {
+    console.error("Verification error:", err);
+    setError("Failed to verify certificate. Please check the QR code and try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const startCamera = async () => {
     setScanResult(null);
@@ -124,7 +154,34 @@ export default function InjiVerify() {
       setLoading(false);
     }
   };
-
+      const downloadVC = async () => {
+      if (!scanResult) return;
+      
+      try {
+        // Extract cert ID from verify URL
+        const certId = scanResult.verifyUrl?.split('/verify/')[1] || scanResult.verifyUrl;
+        
+        const response = await fetch(`/api/verify/${certId}`);
+        const data = await response.json();
+        
+        // Create downloadable JSON
+        const vcData = data.credential_data || data;
+        const blob = new Blob([JSON.stringify(vcData, null, 2)], {
+          type: 'application/json'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificate-${scanResult.batchNumber}.json`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error("Download failed:", error);
+        alert("Failed to download certificate");
+      }
+    };
   return (
     <div className="min-h-screen bg-[#fcfdfc] pb-12">
       {/* Header Section */}
@@ -249,13 +306,23 @@ export default function InjiVerify() {
               </div>
 
               {scanResult.verifyUrl && (
-                <Button 
-                  className="w-full bg-emerald-950 hover:bg-black text-white rounded-2xl h-14 font-bold text-base shadow-lg transition-all"
-                  onClick={() => window.open(scanResult.verifyUrl, '_blank')}
-                >
-                  View Cryptographic Proof
-                  <ExternalLink className="ml-2 w-5 h-5" />
-                </Button>
+                <>
+                  <Button 
+                    className="w-full bg-emerald-950 hover:bg-black text-white rounded-2xl h-14 font-bold text-base shadow-lg transition-all"
+                    onClick={() => window.open(scanResult.verifyUrl, '_blank')}
+                  >
+                    View Full Certificate Details
+                    <ExternalLink className="ml-2 w-5 h-5" />
+                  </Button>
+                  
+                  <Button 
+                    className="w-full bg-white border-2 border-emerald-950 text-emerald-950 rounded-2xl h-14 font-bold text-base hover:bg-emerald-50 transition-all"
+                    onClick={downloadVC}
+                  >
+                    Download Certificate (JSON)
+                    <Download className="ml-2 w-5 h-5" />
+                  </Button>
+                </>
               )}
             </CardContent>
           </Card>
