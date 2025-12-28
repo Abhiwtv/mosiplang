@@ -23,6 +23,8 @@
   },
   "batchSubmission": {
     "title": "Batch Submission",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity to show",
     "description": "View all batches and their status",
     "errorLoading": "Failed to load batch data",
     "buttons": {

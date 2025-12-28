@@ -23,6 +23,8 @@
   },
   "batchSubmission": {
     "title": "बैच प्रस्तुति",
+    "recentActivity": "हाल की गतिविधि",
+    "noRecentActivity": "दिखाने के लिए कोई हाल की गतिविधि नहीं",
     "description": "सभी बैच और उनकी स्थिति देखें",
     "errorLoading": "बैच डेटा लोड करने में विफल",
     "buttons": {

@@ -23,6 +23,8 @@
   },
   "batchSubmission": {
     "title": "Chargeneingabe",
+    "recentActivity": "Letzte Aktivitäten",
+    "noRecentActivity": "Keine aktuellen Aktivitäten anzuzeigen",
     "description": "Alle Chargen und deren Status anzeigen",
     "errorLoading": "Fehler beim Laden der Chargendaten",
     "buttons": {

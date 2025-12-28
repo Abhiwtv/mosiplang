@@ -305,7 +305,7 @@ export function BatchSubmission() {
 
         {/* Recent Activity Feed */}
         <div className="bg-white border border-slate-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-6">{t('recentActivity')}</h2>
           <div className="space-y-4">
             {recentActivity.length === 0 && (
               <p className="text-slate-500 text-sm text-center py-8">No recent activity</p>
